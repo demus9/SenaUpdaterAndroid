@@ -33,7 +33,7 @@ The headset answers the `01 1D` query with four bytes. Only these are known (con
 
 ## Known limits
 
-- If an unknown Sena USB product ID is connected, or the newest `30KV2` firmware on Sena's server is not in the app's known version list, the app shows a "Contact developer" card that opens a prefilled GitHub issue.
+- If an unknown Sena USB product ID is connected, the headset reports an unknown firmware version, or the newest `30KV2` firmware on Sena's server is not in the app's known version list, the app shows a "Contact developer" card that opens a prefilled GitHub issue.
 - The transfer sequence is confirmed from captures of v4.5 and v4.5.1 only. Component 1 and component 2 are sent; component 3 is not. Other versions are assumed to use the same sequence.
 - The headset may silently refuse a downgrade: flashing 3.0.1 transferred fully, but the headset kept reporting 4.5.1.
 - Embedded MD5 values in images are not checked.

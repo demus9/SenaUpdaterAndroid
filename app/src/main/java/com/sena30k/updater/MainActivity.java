@@ -73,6 +73,7 @@ public final class MainActivity extends AppCompatActivity {
     private TextView contactText;
     private final List<String> unknownUsbIds = new ArrayList<>();
     private String unknownFirmwareNote;
+    private String unknownVersionNote;
 
     private final ExecutorService inspectionWorker = Executors.newSingleThreadExecutor();
     private final ExecutorService downloadWorker = Executors.newSingleThreadExecutor();
@@ -407,6 +408,7 @@ public final class MainActivity extends AppCompatActivity {
         if (devices.isEmpty()) {
             usbStatus.setText("No USB devices are currently visible to Android.");
             unknownUsbIds.clear();
+            unknownVersionNote = null;
             updateContactCard();
             usbSummary.setText("No headset connected");
             lastAutoVersionQueryDeviceName = null;
@@ -461,6 +463,8 @@ public final class MainActivity extends AppCompatActivity {
         if (dfuDevice == null) {
             lastAutoVersionQueryDeviceName = null;
             detectedDeviceVersion = null;
+            unknownVersionNote = null;
+            updateContactCard();
             deviceVersionStatus.setText("Headset firmware: captured DFU device not detected");
         } else if (!dfuDevice.getDeviceName().equals(previousDeviceName)
                 || !dfuDevice.getDeviceName().equals(lastAutoVersionQueryDeviceName)) {
@@ -691,13 +695,18 @@ public final class MainActivity extends AppCompatActivity {
                 deviceVersionStatus.setText("Headset firmware: read failed — " + readFailure);
             } else if (versionResult.version == null) {
                 detectedDeviceVersion = null;
+                unknownVersionNote = "The headset reported an unknown firmware version (raw reply "
+                        + versionResult.rawValue() + "). Please contact the developer and tell "
+                        + "which firmware version the official Sena app shows for it.";
                 deviceVersionStatus.setText("Headset firmware: unknown (response "
                         + versionResult.rawValue() + ")");
             } else {
                 detectedDeviceVersion = versionResult.version;
+                unknownVersionNote = null;
                 deviceVersionStatus.setText(
                         "Headset firmware: " + versionResult.version + " (detected)");
             }
+            updateContactCard();
             updateButtonState();
             if (forRetry && readFailure == null) {
                 confirmRetryAfterVersionCheck(device, versionResult);
@@ -926,6 +935,12 @@ public final class MainActivity extends AppCompatActivity {
             }
             text.append(unknownFirmwareNote);
         }
+        if (unknownVersionNote != null) {
+            if (text.length() > 0) {
+                text.append("\n\n");
+            }
+            text.append(unknownVersionNote);
+        }
         contactCard.setVisibility(text.length() == 0 ? View.GONE : View.VISIBLE);
         contactText.setText(text.toString());
     }
@@ -939,6 +954,9 @@ public final class MainActivity extends AppCompatActivity {
         }
         if (unknownFirmwareNote != null) {
             body.append(unknownFirmwareNote).append('\n');
+        }
+        if (unknownVersionNote != null) {
+            body.append(unknownVersionNote).append('\n');
         }
         Uri uri = Uri.parse("https://github.com/demus9/SenaUpdaterAndroid/issues/new")
                 .buildUpon()
