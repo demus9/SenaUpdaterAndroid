@@ -63,7 +63,7 @@ The debug APK is created at `app\build\outputs\apk\debug\app-debug.apk`. Install
 
 ## Using it
 
-Power the headset off and connect it with a USB data cable (OTG adapter if needed). Grant USB permission, check the detected model and version, choose or download an image, and confirm.
+Power the headset OFF and connect it with a USB data cable (OTG adapter if needed). Grant USB permission, check the detected model and version, choose or download an image, and confirm.
 
 ## Icon
 
