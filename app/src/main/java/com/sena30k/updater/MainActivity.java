@@ -67,6 +67,12 @@ public final class MainActivity extends AppCompatActivity {
     private static final int USB_ACTION_READ_VERSION = 1;
     private static final int USB_ACTION_TRANSFER = 2;
     private static final int USB_ACTION_RETRY_CHECK = 3;
+    private static final String KNOWN_MODEL = "30KV2";
+
+    private MaterialCardView contactCard;
+    private TextView contactText;
+    private final List<String> unknownUsbIds = new ArrayList<>();
+    private String unknownFirmwareNote;
 
     private final ExecutorService inspectionWorker = Executors.newSingleThreadExecutor();
     private final ExecutorService downloadWorker = Executors.newSingleThreadExecutor();
@@ -400,6 +406,8 @@ public final class MainActivity extends AppCompatActivity {
         devices.sort(Comparator.comparing(UsbDevice::getDeviceName));
         if (devices.isEmpty()) {
             usbStatus.setText("No USB devices are currently visible to Android.");
+            unknownUsbIds.clear();
+            updateContactCard();
             usbSummary.setText("No headset connected");
             lastAutoVersionQueryDeviceName = null;
             detectedDeviceVersion = null;
@@ -409,7 +417,14 @@ public final class MainActivity extends AppCompatActivity {
         }
 
         StringBuilder text = new StringBuilder();
+        unknownUsbIds.clear();
         for (UsbDevice device : devices) {
+            if (UsbIdentity.isUnknownSenaProduct(device.getVendorId(), device.getProductId())) {
+                String id = hex(device.getVendorId()) + ":" + hex(device.getProductId());
+                if (!unknownUsbIds.contains(id)) {
+                    unknownUsbIds.add(id);
+                }
+            }
             if (device.getVendorId() == SENA_VENDOR_ID
                     && device.getProductId() == SENA_30K_CAPTURED_DFU_PRODUCT_ID
                     && dfuInterface == null) {
@@ -439,6 +454,7 @@ public final class MainActivity extends AppCompatActivity {
             text.append("\n\nCaptured Sena 30K DFU interface is available.");
         }
         usbStatus.setText(text.toString());
+        updateContactCard();
         usbSummary.setText(dfuDevice != null
                 ? "Sena headset connected (update mode)"
                 : "No Sena headset in update mode detected");
@@ -893,6 +909,68 @@ public final class MainActivity extends AppCompatActivity {
         return "Selected file";
     }
 
+    private void updateContactCard() {
+        if (contactCard == null) {
+            return;
+        }
+        StringBuilder text = new StringBuilder();
+        if (!unknownUsbIds.isEmpty()) {
+            text.append("Unknown Sena USB product ID detected: ")
+                    .append(android.text.TextUtils.join(", ", unknownUsbIds))
+                    .append(". This device is not supported yet. Please contact the developer "
+                            + "so support can be added.");
+        }
+        if (unknownFirmwareNote != null) {
+            if (text.length() > 0) {
+                text.append("\n\n");
+            }
+            text.append(unknownFirmwareNote);
+        }
+        contactCard.setVisibility(text.length() == 0 ? View.GONE : View.VISIBLE);
+        contactText.setText(text.toString());
+    }
+
+    private void openContactPage() {
+        StringBuilder body = new StringBuilder();
+        body.append("Please describe your headset and what you were doing.\n\n");
+        if (!unknownUsbIds.isEmpty()) {
+            body.append("Unknown USB VID:PID: ")
+                    .append(android.text.TextUtils.join(", ", unknownUsbIds)).append('\n');
+        }
+        if (unknownFirmwareNote != null) {
+            body.append(unknownFirmwareNote).append('\n');
+        }
+        Uri uri = Uri.parse("https://github.com/demus9/SenaUpdaterAndroid/issues/new")
+                .buildUpon()
+                .appendQueryParameter("title", "Unsupported device or firmware")
+                .appendQueryParameter("body", body.toString())
+                .build();
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, uri));
+        } catch (android.content.ActivityNotFoundException e) {
+            Toast.makeText(this, "No app available to open " + uri, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void checkLatestFirmwareKnown(FirmwareCatalog result) {
+        unknownFirmwareNote = null;
+        List<String> languages = result.languages(KNOWN_MODEL);
+        if (!languages.isEmpty()) {
+            List<FirmwareCatalog.Entry> latest =
+                    result.versions(KNOWN_MODEL, languages.get(0), true);
+            if (!latest.isEmpty()) {
+                String version = latest.get(0).versionText();
+                if (!SenaDeviceVersionReader.isKnownVersion(version)) {
+                    unknownFirmwareNote = "The newest " + KNOWN_MODEL + " firmware on Sena's server ("
+                            + version + ") is not in this app's known firmware list, so the "
+                            + "headset's version may not be recognized after flashing. "
+                            + "Please contact the developer.";
+                }
+            }
+        }
+        updateContactCard();
+    }
+
     private void loadCatalog() {
         if (catalogStatus != null) {
             catalogStatus.setText("Loading firmware list…");
@@ -926,6 +1004,7 @@ public final class MainActivity extends AppCompatActivity {
                     return;
                 }
                 catalog = result;
+                checkLatestFirmwareKnown(result);
                 catalogStatus.setText(result.models().size() + " headset models available.");
                 modelDropdown.setAdapter(new ArrayAdapter<>(
                         this, android.R.layout.simple_list_item_1, result.models()));
@@ -1139,6 +1218,22 @@ public final class MainActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText("Download"));
         root.addView(tabLayout, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        contactCard = new MaterialCardView(this);
+        LinearLayout contactInner = new LinearLayout(this);
+        contactInner.setOrientation(LinearLayout.VERTICAL);
+        contactInner.setPadding(dp(16), dp(8), dp(16), dp(12));
+        contactCard.addView(contactInner);
+        contactText = addText(contactInner, "", 14, false);
+        Button contactButton = newButton(false);
+        contactButton.setText("Contact developer");
+        contactButton.setOnClickListener(view -> openContactPage());
+        contactInner.addView(contactButton, matchWrap());
+        contactCard.setVisibility(View.GONE);
+        LinearLayout.LayoutParams contactParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        contactParams.setMargins(dp(16), dp(8), dp(16), 0);
+        root.addView(contactCard, contactParams);
 
         FrameLayout pages = new FrameLayout(this);
         ScrollView updateScroll = new ScrollView(this);

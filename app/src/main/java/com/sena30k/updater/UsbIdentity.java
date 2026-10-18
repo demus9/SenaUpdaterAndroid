@@ -10,6 +10,15 @@ public final class UsbIdentity {
     private UsbIdentity() {
     }
 
+    /** True for a Sena vendor ID combined with a product ID this app has no knowledge of. */
+    public static boolean isUnknownSenaProduct(int vendorId, int productId) {
+        return vendorId == SENA_VENDOR_ID
+                && productId != USER_OBSERVED_30K_ON_PRODUCT_ID
+                && productId != USER_OBSERVED_30K_OFF_PRODUCT_ID
+                && productId != DRIVER_LISTED_30K_PRODUCT_ID
+                && productId != GENERIC_DFU_PRODUCT_ID;
+    }
+
     public static String descriptionFor(int vendorId, int productId) {
         if (vendorId != SENA_VENDOR_ID) {
             return "Not a Sena USB vendor ID.";

@@ -15,6 +15,14 @@ public final class SenaDeviceVersionReader {
     private SenaDeviceVersionReader() {
     }
 
+    private static final java.util.Set<String> KNOWN_VERSIONS = new java.util.HashSet<>(
+            java.util.Arrays.asList("v4.0", "v4.1", "v4.4.1", "v4.5", "v4.5.1"));
+
+    /** Whether the headset's version reply for this firmware version is known to the app. */
+    public static boolean isKnownVersion(String versionText) {
+        return versionText != null && KNOWN_VERSIONS.contains(versionText);
+    }
+
     public static Result read(
             UsbDeviceConnection connection,
             UsbEndpoint outEndpoint,
