@@ -296,8 +296,25 @@ public final class MainActivity extends AppCompatActivity {
         content.addView(transferProgressBar, matchWrap());
         transferProgressStatus = addText(content, "No transfer in progress.", 14, false);
         addText(content, UpdateReadiness.safetyNotice(), 14, false);
+        addSupportButton(updatePage);
 
         assembleScreen(updatePage);
+    }
+
+    private void addSupportButton(LinearLayout page) {
+        Button support = newButton(false);
+        support.setText("☕ Support the developer");
+        support.setOnClickListener(view -> {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://buymeacoffee.com/demus9")));
+            } catch (android.content.ActivityNotFoundException e) {
+                Toast.makeText(this, "https://buymeacoffee.com/demus9", Toast.LENGTH_LONG).show();
+            }
+        });
+        LinearLayout.LayoutParams params = matchWrap();
+        params.topMargin = dp(16);
+        page.addView(support, params);
     }
 
     private void chooseFirmware() {
@@ -1085,6 +1102,7 @@ public final class MainActivity extends AppCompatActivity {
         reloadButton.setText("Reload list");
         reloadButton.setOnClickListener(view -> loadCatalog());
         card.addView(reloadButton, matchWrap());
+        addSupportButton(page);
         return page;
     }
 

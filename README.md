@@ -4,6 +4,7 @@ An unofficial, independently written Android app that updates Sena headset firmw
 
 > **Use at your own risk.** This project is not affiliated with or endorsed by Sena Technologies. A failed or interrupted update can leave a headset unusable. The Sena name and logo belong to their owners. The software is tested only against a 30K; other models are not supported for flashing.
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-demus9-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/demus9) If this saved you a trip to a PC, you can [support the project](https://buymeacoffee.com/demus9).
 ## Features
 
 - **Update tab**
