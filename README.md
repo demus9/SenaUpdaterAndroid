@@ -71,4 +71,4 @@ The launcher icon is rendered from `sena_update_logo.svg`.
 
 ## License
 
-MIT, see [LICENSE](LICENSE). Firmware images are Sena's property and are not included in this repository.
+Apache License 2.0, see [LICENSE](LICENSE) and [NOTICE](NOTICE). Redistributions must keep the license and the NOTICE attribution. Firmware images are Sena's property and are not included in this repository.
