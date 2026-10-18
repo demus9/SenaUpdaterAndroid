@@ -1,6 +1,6 @@
-# Sena 30K Android Updater (unofficial)
+# Sena Firmware Updater for Android (unofficial)
 
-An unofficial, independently written Android app that updates the firmware of a **Sena 30K** headset over USB (OTG). The USB protocol was reverse engineered from USB captures and the firmware image layout, not from Sena source code.
+An unofficial, independently written Android app that updates Sena headset firmware over USB (OTG). The goal is a universal updater for Sena devices; **currently only the Sena 30K is supported for flashing**. The USB protocol was reverse engineered from USB captures and the firmware image layout, not from Sena source code.
 
 > **Use at your own risk.** This project is not affiliated with or endorsed by Sena Technologies. A failed or interrupted update can leave a headset unusable. The Sena name and logo belong to their owners. The software is tested only against a 30K; other models are not supported for flashing.
 

@@ -10,7 +10,7 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:label="Sena 30K Updater (Candidate)"
+        android:label="Sena Firmware Updater"
         android:supportsRtl="true"
         android:theme="@style/Theme.Sena30KUpdater">
         <activity

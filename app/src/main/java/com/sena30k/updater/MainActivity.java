@@ -233,8 +233,8 @@ public final class MainActivity extends AppCompatActivity {
     private void buildScreen() {
         LinearLayout updatePage = newPage();
         addText(updatePage,
-                "Firmware writes are limited to the captured 30K DFU identity and a recognized "
-                        + "three-component package layout.",
+                "Currently supported for flashing: Sena 30K (verified DFU identity and a recognized "
+                        + "three-component package layout). More models are planned.",
                 14, false);
         LinearLayout content = addCard(updatePage, "Headset");
         usbSummary = addText(content, "Scanning…", 15, false);
@@ -440,8 +440,8 @@ public final class MainActivity extends AppCompatActivity {
         }
         usbStatus.setText(text.toString());
         usbSummary.setText(dfuDevice != null
-                ? "Sena 30K connected (update mode)"
-                : "No Sena 30K in update mode detected");
+                ? "Sena headset connected (update mode)"
+                : "No Sena headset in update mode detected");
         if (dfuDevice == null) {
             lastAutoVersionQueryDeviceName = null;
             detectedDeviceVersion = null;
@@ -1037,12 +1037,14 @@ public final class MainActivity extends AppCompatActivity {
     private void showSelectedVersion() {
         if (selectedVersionIndex < 0 || selectedVersionIndex >= currentVersions.size()) {
             downloadInfo.setText("No firmware found for this selection.");
+            updateDownloadControls();
             return;
         }
         FirmwareCatalog.Entry entry = currentVersions.get(selectedVersionIndex);
         downloadInfo.setText("File: " + entry.fileName + (entry.older
                 ? "\nOlder versions may be refused by the headset or be incompatible with it."
                 : ""));
+        updateDownloadControls();
     }
 
     private void startDownload() {
@@ -1127,7 +1129,7 @@ public final class MainActivity extends AppCompatActivity {
         root.setOrientation(LinearLayout.VERTICAL);
 
         MaterialToolbar toolbar = new MaterialToolbar(this);
-        toolbar.setTitle("Sena 30K updater");
+        toolbar.setTitle("Sena Firmware Updater");
         toolbar.setSubtitle("Experimental Android USB updater");
         root.addView(toolbar, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
