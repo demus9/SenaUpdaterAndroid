@@ -1,0 +1,5 @@
+.gradle/
+.gradle-bootstrap/
+build/
+local.properties
+**/build/
