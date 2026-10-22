@@ -103,6 +103,7 @@ public final class MainActivity extends AppCompatActivity {
     private TextView usbStatus;
     private TextView usbSummary;
     private TextView firmwareStatus;
+    private MaterialAutoCompleteTextView updateModelDropdown;
     private TextView selectedFileName;
     private TextView deviceVersionStatus;
     private TextView transferProgressStatus;
@@ -246,6 +247,13 @@ public final class MainActivity extends AppCompatActivity {
         LinearLayout content = addCard(updatePage, "Headset");
         usbSummary = addText(content, "Scanning…", 15, false);
         deviceVersionStatus = addText(content, "Headset firmware: not read yet", 15, false);
+        TextInputLayout updateModelLayout = addDropdown(content, "Headset model");
+        updateModelDropdown = (MaterialAutoCompleteTextView) updateModelLayout.getEditText();
+        updateModelDropdown.setAdapter(new ArrayAdapter<>(
+                this, android.R.layout.simple_list_item_1,
+                java.util.Collections.singletonList(KNOWN_MODEL)));
+        updateModelDropdown.setText("Not detected", false);
+        updateModelDropdown.setEnabled(false);
         LinearLayout headsetDetails = new LinearLayout(this);
         headsetDetails.setOrientation(LinearLayout.VERTICAL);
         headsetDetails.setVisibility(View.GONE);
@@ -416,6 +424,7 @@ public final class MainActivity extends AppCompatActivity {
         if (usbManager == null) {
             usbStatus.setText("Android USB host service is unavailable.");
             usbSummary.setText("USB unavailable");
+            setDetectedHeadsetModel(null);
             updateButtonState();
             return;
         }
@@ -430,6 +439,7 @@ public final class MainActivity extends AppCompatActivity {
             usbSummary.setText("No headset connected");
             lastAutoVersionQueryDeviceName = null;
             detectedDeviceVersion = null;
+            setDetectedHeadsetModel(null);
             deviceVersionStatus.setText("Headset firmware: device disconnected");
             updateButtonState();
             return;
@@ -480,6 +490,7 @@ public final class MainActivity extends AppCompatActivity {
         if (dfuDevice == null) {
             lastAutoVersionQueryDeviceName = null;
             detectedDeviceVersion = null;
+            setDetectedHeadsetModel(null);
             unknownVersionNote = null;
             updateContactCard();
             deviceVersionStatus.setText("Headset firmware: captured DFU device not detected");
@@ -487,6 +498,7 @@ public final class MainActivity extends AppCompatActivity {
                 || !dfuDevice.getDeviceName().equals(lastAutoVersionQueryDeviceName)) {
             lastAutoVersionQueryDeviceName = dfuDevice.getDeviceName();
             detectedDeviceVersion = null;
+            setDetectedHeadsetModel(null);
             deviceVersionStatus.setText("Headset firmware: reading version…");
             requestUsbAction(dfuDevice, USB_ACTION_READ_VERSION);
         }
@@ -709,19 +721,24 @@ public final class MainActivity extends AppCompatActivity {
             versionQueryInProgress = false;
             if (readFailure != null) {
                 detectedDeviceVersion = null;
+                setDetectedHeadsetModel(null);
                 deviceVersionStatus.setText("Headset firmware: read failed — " + readFailure);
-            } else if (versionResult.version == null) {
-                detectedDeviceVersion = null;
-                unknownVersionNote = "The headset reported an unknown firmware version (raw reply "
-                        + versionResult.rawValue() + "). Please contact the developer and tell "
-                        + "which firmware version the official Sena app shows for it.";
-                deviceVersionStatus.setText("Headset firmware: unknown (response "
-                        + versionResult.rawValue() + ")");
             } else {
-                detectedDeviceVersion = versionResult.version;
-                unknownVersionNote = null;
-                deviceVersionStatus.setText(
-                        "Headset firmware: " + versionResult.version + " (detected)");
+                setDetectedHeadsetModel(KNOWN_MODEL);
+                if (versionResult.version == null) {
+                    detectedDeviceVersion = null;
+                    unknownVersionNote = "The headset reported an unknown firmware version "
+                            + "(raw reply " + versionResult.rawValue() + "). Please contact "
+                            + "the developer and tell which firmware version the official Sena "
+                            + "app shows for it.";
+                    deviceVersionStatus.setText("Headset firmware: unknown (response "
+                            + versionResult.rawValue() + ")");
+                } else {
+                    detectedDeviceVersion = versionResult.version;
+                    unknownVersionNote = null;
+                    deviceVersionStatus.setText(
+                            "Headset firmware: " + versionResult.version + " (detected)");
+                }
             }
             updateContactCard();
             updateButtonState();
@@ -729,6 +746,11 @@ public final class MainActivity extends AppCompatActivity {
                 confirmRetryAfterVersionCheck(device, versionResult);
             }
         });
+    }
+
+    private void setDetectedHeadsetModel(String model) {
+        updateModelDropdown.setText(model == null ? "Not detected" : model, false);
+        updateModelDropdown.setEnabled(model != null);
     }
 
     private void confirmRetryAfterVersionCheck(
