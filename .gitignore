@@ -2,4 +2,7 @@
 .gradle-bootstrap/
 build/
 local.properties
+keystore.properties
+*.jks
+*.keystore
 **/build/

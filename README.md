@@ -67,6 +67,10 @@ The debug APK is created at `app\build\outputs\apk\debug\app-debug.apk`. Install
 
 Power the headset OFF and connect it with a USB data cable (OTG adapter if needed). Grant USB permission, check the detected model and version, choose or download an image, and confirm.
 
+## Privacy
+
+The app collects no data. See [PRIVACY.md](PRIVACY.md).
+
 ## Icon
 
 The launcher icon is rendered from `sena_update_logo.svg`.

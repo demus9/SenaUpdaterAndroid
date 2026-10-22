@@ -1,4 +1,4 @@
-package com.sena30k.updater;
+package com.intercom.update;
 
 public final class UsbIdentity {
     private static final int SENA_VENDOR_ID = 0x092b;

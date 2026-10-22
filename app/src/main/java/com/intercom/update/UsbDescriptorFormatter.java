@@ -1,4 +1,4 @@
-package com.sena30k.updater;
+package com.intercom.update;
 
 import android.hardware.usb.UsbConstants;
 

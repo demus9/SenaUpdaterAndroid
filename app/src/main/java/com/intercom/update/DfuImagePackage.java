@@ -1,4 +1,4 @@
-package com.sena30k.updater;
+package com.intercom.update;
 
 import java.util.ArrayList;
 import java.util.Collections;

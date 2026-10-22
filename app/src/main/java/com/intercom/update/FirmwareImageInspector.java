@@ -1,4 +1,4 @@
-package com.sena30k.updater;
+package com.intercom.update;
 
 import java.io.IOException;
 import java.io.InputStream;

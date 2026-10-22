@@ -1,4 +1,4 @@
-package com.sena30k.updater;
+package com.intercom.update;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

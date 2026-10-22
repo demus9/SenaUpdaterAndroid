@@ -1,13 +1,40 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
 }
 
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("keystore.properties")
+    if (file.isFile) {
+        file.inputStream().use { load(it) }
+    }
+}
+
 android {
-    namespace = "com.sena30k.updater"
+    namespace = "com.intercom.update"
     compileSdk = 36
 
+    signingConfigs {
+        if (keystoreProperties.containsKey("storeFile")) {
+            create("release") {
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            signingConfigs.findByName("release")?.let { signingConfig = it }
+        }
+    }
+
     defaultConfig {
-        applicationId = "com.sena30k.updater"
+        applicationId = "com.intercom.update"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

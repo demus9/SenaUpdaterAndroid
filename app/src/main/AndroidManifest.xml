@@ -10,9 +10,9 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:label="Sena Firmware Updater"
+        android:label="Firmware update for sena"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Sena30KUpdater">
+        android:theme="@style/Theme.FirmwareUpdate">
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"

@@ -1,4 +1,4 @@
-package com.sena30k.updater;
+package com.intercom.update;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -62,7 +62,7 @@ public final class MainActivity extends AppCompatActivity {
     private static final int SENA_30K_CAPTURED_DFU_PRODUCT_ID = 0x3211;
     private static final int MAX_STAGED_IMAGE_BYTES = 32 * 1024 * 1024;
     private static final String USB_PERMISSION_ACTION =
-            "com.sena30k.updater.USB_PERMISSION";
+            "com.intercom.update.USB_PERMISSION";
     private static final int USB_ACTION_NONE = 0;
     private static final int USB_ACTION_READ_VERSION = 1;
     private static final int USB_ACTION_TRANSFER = 2;
@@ -887,7 +887,7 @@ public final class MainActivity extends AppCompatActivity {
     private void deleteStagedImage() {
         if (stagedImageFile != null && stagedImageFile.exists()
                 && !stagedImageFile.delete()) {
-            android.util.Log.w("Sena30KUpdater", "Could not remove the staged firmware image.");
+            android.util.Log.w("FirmwareUpdate", "Could not remove the staged firmware image.");
         }
         stagedImageFile = null;
     }
@@ -1022,7 +1022,7 @@ public final class MainActivity extends AppCompatActivity {
                     loaded.addOlderCsv(new String(
                             csv.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8));
                 } catch (IOException e) {
-                    android.util.Log.w("Sena30KUpdater", "Older firmware list unavailable.", e);
+                    android.util.Log.w("FirmwareUpdate", "Older firmware list unavailable.", e);
                 }
             } catch (IOException | RuntimeException e) {
                 failure = errorMessage(e);

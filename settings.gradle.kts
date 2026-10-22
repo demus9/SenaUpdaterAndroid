@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Sena30KUpdaterAndroid"
+rootProject.name = "SenaUpdaterAndroid"
 include(":app")
